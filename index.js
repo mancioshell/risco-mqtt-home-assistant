@@ -91,7 +91,7 @@ module.exports = (config) => {
 
         for (const zone of zones) {
             const partitionId = zone.part - 1
-            const nodeId = zone.zoneName.replace(' ', '-')
+            const nodeId = zone.zoneName.replace(/\s+/g, '-')
             const payload = {
                 'name': `${zone.zoneName}`,
                 'payload_on': 'triggered',

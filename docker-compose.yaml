@@ -1,0 +1,7 @@
+version: "2.1"
+services:
+  risco-mqtt-home-assistant:
+    image: risco-mqtt-home-assistant:latest
+    container_name: risco-mqtt-home-assistant
+    env_file: .risco.env
+    restart: unless-stopped
