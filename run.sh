@@ -20,7 +20,7 @@ cat > config.json <<EOF
     "password": "${RISCO_PASSWORD}",
     "pin": "${CENTRAL_PIN_CODE}",
     "language-id": "${LANGUAGE_ID-nl}",
-    "mqtt-url": "mqtt://${MQTT_HOST}:${MQTT_PORT-1883}",
+    "mqtt-url": "${MQTT_PROTOCOL-mqtt}://${MQTT_HOST}:${MQTT_PORT-1883}",
     "mqtt-username": "${MQTT_USERNAME}",
     "mqtt-password": "${MQTT_PASSWORD}",
     "interval-polling": "${RISCO_INTERVAL_POLLING-5000}",
