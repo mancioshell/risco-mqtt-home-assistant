@@ -22,27 +22,41 @@ Sometimes Risco Cloud Web API (that is the basis on which [risco-mqtt-bridge](ht
 
 ## Installation
 
-```
-npm install risco-mqtt-home-assistant
-```
-
-## Configuration
-
-Create a file config.json in your project directory.
+1. Create a docker-compose.yaml file with the following content:
 
 ```
-{
-    "username": "YOUR_RISCO_EMAIL",
-    "password": "YOUR_RISCO_PASSWORD",
-    "pin": "YOUR_CENTRAL_PIN_CODE",
-    "language-id": "YOUR_LANGUAGE_ID", // example: en, it, de etc ...
-    "mqtt-url": "mqtt://MQTT_HOST:MQTT_PORT",
-    "mqtt-username": "MQTT_USERNAME",
-    "mqtt-password": "MQTT_PASSWORD",
-    "interval-polling": "RISCO_INTERVAL_POLLING", // default is 5000
-    "home-assistant-discovery-prefix" : "YOUR_HOME-ASSISTANT-DISCOVERY-PREFIX" // default is homeassistant
-}
+version: "2.1"
+services:
+  risco-mqtt-home-assistant:
+    image: dockerbytes/risco-mqtt-home-assistant:latest
+    container_name: risco-mqtt-home-assistant
+    env_file: .risco.env
+    restart: unless-stopped
+```
 
+2. In the same directory create an .risco.env with the following content (no quotes needed):
+
+```
+RISCO_EMAIL=
+RISCO_PASSWORD=
+CENTRAL_PIN_CODE=
+MQTT_HOST=
+```
+
+The following variables can be added in case required to .risco.env (no quotes needed):
+
+```
+MQTT_USER=
+MQTT_PASSWORD=
+MQTT_PORT=
+RISCO_INTERVAL_POLLING=
+HOME_ASSISTANT_DISCOVERY_PREFIX=
+```
+
+3. In the same directory as your docker-compose.yaml run the following command:
+
+```
+docker-compose up
 ```
 
 ## Subscribe Topics
@@ -72,9 +86,3 @@ In addition to every zones, risco-mqtt-home-assistant publishes a topic for ever
 risco-mqtt-home-assistant supports [mqtt auto discovery](https://www.home-assistant.io/docs/mqtt/discovery/) feature.
 
 Default `<discovery_prefix>` is **homeassistant**. You can change it by overwriting the value within **home-assistant-discovery-prefix** config.
-
-## Usage
-
-To start risco-mqtt-home-assistant you can simply type:
-
-`npx risco-mqtt-home-assistant`
