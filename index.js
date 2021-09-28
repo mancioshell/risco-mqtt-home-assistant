@@ -96,6 +96,8 @@ module.exports = (config) => {
                 const payload = {
                     'name': `${zone.zoneName}`,
                     'device_class': 'motion',
+                    'payload_on': 'on',
+                    'payload_off': 'off',
                     'state_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`,
                     'json_attributes_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`
                 }
@@ -105,6 +107,8 @@ module.exports = (config) => {
                 const payload = {
                     'name': `${zone.zoneName}`,
                     'device_class': 'window',
+                    'payload_on': 'on',
+                    'payload_off': 'off',
                     'state_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`,
                     'json_attributes_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`
                 }
@@ -114,6 +118,8 @@ module.exports = (config) => {
                 const payload = {
                     'name': `${zone.zoneName}`,
                     'device_class': 'door',
+                    'payload_on': 'on',
+                    'payload_off': 'off',
                     'state_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`,
                     'json_attributes_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`
                 }
