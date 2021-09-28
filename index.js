@@ -92,21 +92,21 @@ module.exports = (config) => {
         for (const zone of zones) {
             const partitionId = zone.part - 1
             const nodeId = zone.zoneName.replace(/\s+/g, '-')
-            if (nodeId.toLowerCase().incudes("pir")) {
+            if (nodeId.toLowerCase().includes("pir")) {
                 const payload = {
                     'name': `${zone.zoneName}`,
                     'device_class': 'motion',
                     'state_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`,
                     'json_attributes_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`
                 }        
-            } else if (nodeId.toLowerCase().incudes("raam") || nodeId.toLowerCase().incudes("window")) {
+            } else if (nodeId.toLowerCase().includes("raam") || nodeId.toLowerCase().includes("window")) {
                 const payload = {
                     'name': `${zone.zoneName}`,
                     'device_class': 'window',
                     'state_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`,
                     'json_attributes_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`
                 }
-            } else if (nodeId.toLowerCase().incudes("deur") || nodeId.toLowerCase().incudes("door")) {
+            } else if (nodeId.toLowerCase().includes("deur") || nodeId.toLowerCase().includes("door")) {
                 const payload = {
                     'name': `${zone.zoneName}`,
                     'device_class': 'door',
