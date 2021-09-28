@@ -91,9 +91,9 @@ module.exports = (config) => {
         }
 
         for (const zone of zones) {
-            const partitionId = zone.part - 1
-            const nodeId = zone.zoneName.replace(/\s+/g, '-')
             if (nodeId.toLowerCase().includes("pir")) {
+                const partitionId = zone.part - 1
+                const nodeId = zone.zoneName.replace(/\s+/g, '-')    
                 const payload = {
                     'name': `${zone.zoneName}`,
                     'device_class': 'motion',
@@ -105,6 +105,8 @@ module.exports = (config) => {
                 mqttClient.publish(`${HASSIO_DISCOVERY_PREFIX_TOPIC}/binary_sensor/${nodeId}/${zone.zoneID}/config`, JSON.stringify(payload),{retain:true})
                 console.log(`published ${zone.zoneName} as motion sensor for homeassistant autodiscovery`)        
             } else if (nodeId.toLowerCase().includes("raam") || nodeId.toLowerCase().includes("window")) {
+                const partitionId = zone.part - 1
+                const nodeId = zone.zoneName.replace(/\s+/g, '-')    
                 const payload = {
                     'name': `${zone.zoneName}`,
                     'device_class': 'window',
@@ -116,6 +118,8 @@ module.exports = (config) => {
                 mqttClient.publish(`${HASSIO_DISCOVERY_PREFIX_TOPIC}/binary_sensor/${nodeId}/${zone.zoneID}/config`, JSON.stringify(payload),{retain:true})
                 console.log(`published ${zone.zoneName} as window sensor for homeassistant autodiscovery`)        
             } else if (nodeId.toLowerCase().includes("deur") || nodeId.toLowerCase().includes("door")) {
+                const partitionId = zone.part - 1
+                const nodeId = zone.zoneName.replace(/\s+/g, '-')    
                 const payload = {
                     'name': `${zone.zoneName}`,
                     'device_class': 'door',
@@ -127,6 +131,8 @@ module.exports = (config) => {
                 mqttClient.publish(`${HASSIO_DISCOVERY_PREFIX_TOPIC}/binary_sensor/${nodeId}/${zone.zoneID}/config`, JSON.stringify(payload),{retain:true})
                 console.log(`published ${zone.zoneName} as door sensor for homeassistant autodiscovery`)                                
             } else {
+                const partitionId = zone.part - 1
+                const nodeId = zone.zoneName.replace(/\s+/g, '-')    
                 const payload = {
                     'name': `${zone.zoneName}`,
                     'payload_on': 'triggered',
