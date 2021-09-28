@@ -91,7 +91,7 @@ module.exports = (config) => {
         }
 
         for (const zone of zones) {
-            if (nodeId.toLowerCase().includes("pir")) {
+            if (zone.zoneName.toLowerCase().includes("pir")) {
                 const partitionId = zone.part - 1
                 const nodeId = zone.zoneName.replace(/\s+/g, '-')    
                 const payload = {
@@ -102,7 +102,7 @@ module.exports = (config) => {
                 }
                 mqttClient.publish(`${HASSIO_DISCOVERY_PREFIX_TOPIC}/binary_sensor/${nodeId}/${zone.zoneID}/config`, JSON.stringify(payload),{retain:true})
                 console.log(`published ${zone.zoneName} as motion sensor for homeassistant autodiscovery`)        
-            } else if (nodeId.toLowerCase().includes("raam") || nodeId.toLowerCase().includes("window")) {
+            } else if (zone.zoneName.toLowerCase().includes("raam") || zone.zoneName.toLowerCase().includes("window")) {
                 const partitionId = zone.part - 1
                 const nodeId = zone.zoneName.replace(/\s+/g, '-')    
                 const payload = {
@@ -113,7 +113,7 @@ module.exports = (config) => {
                 }
                 mqttClient.publish(`${HASSIO_DISCOVERY_PREFIX_TOPIC}/binary_sensor/${nodeId}/${zone.zoneID}/config`, JSON.stringify(payload),{retain:true})
                 console.log(`published ${zone.zoneName} as window sensor for homeassistant autodiscovery`)        
-            } else if (nodeId.toLowerCase().includes("deur") || nodeId.toLowerCase().includes("door")) {
+            } else if (zone.zoneName.toLowerCase().includes("deur") || zone.zoneName.toLowerCase().includes("door")) {
                 const partitionId = zone.part - 1
                 const nodeId = zone.zoneName.replace(/\s+/g, '-')    
                 const payload = {
