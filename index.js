@@ -92,12 +92,35 @@ module.exports = (config) => {
         for (const zone of zones) {
             const partitionId = zone.part - 1
             const nodeId = zone.zoneName.replace(/\s+/g, '-')
-            const payload = {
-                'name': `${zone.zoneName}`,
-                'payload_on': 'triggered',
-                'payload_off': 'idle',
-                'state_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`,
-                'json_attributes_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`
+            if (nodeId.toLowerCase().incudes("pir")) {
+                const payload = {
+                    'name': `${zone.zoneName}`,
+                    'device_class': 'motion',
+                    'state_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`,
+                    'json_attributes_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`
+                }        
+            } else if (nodeId.toLowerCase().incudes("raam") || nodeId.toLowerCase().incudes("window")) {
+                const payload = {
+                    'name': `${zone.zoneName}`,
+                    'device_class': 'window',
+                    'state_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`,
+                    'json_attributes_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`
+                }
+            } else if (nodeId.toLowerCase().incudes("deur") || nodeId.toLowerCase().incudes("door")) {
+                const payload = {
+                    'name': `${zone.zoneName}`,
+                    'device_class': 'door',
+                    'state_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`,
+                    'json_attributes_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`
+                }                        
+            } else {
+                const payload = {
+                    'name': `${zone.zoneName}`,
+                    'payload_on': 'triggered',
+                    'payload_off': 'idle',
+                    'state_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`,
+                    'json_attributes_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`
+                }
             }            
             mqttClient.publish(`${HASSIO_DISCOVERY_PREFIX_TOPIC}/binary_sensor/${nodeId}/${zone.zoneID}/config`, JSON.stringify(payload),{retain:true})
         }
