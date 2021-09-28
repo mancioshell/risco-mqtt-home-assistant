@@ -75,6 +75,7 @@ module.exports = (config) => {
             const partitionId = zone.part - 1
             mqttClient.publish(`${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`, JSON.stringify(zone),{retain:true})
             mqttClient.publish(`${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`, sensorPayload[zone.status],{retain:true})
+            console.log(`published sensor status ${sensorPayload[zone.status]} on sensor ${zone.zoneID}`)
         }
     }
 
