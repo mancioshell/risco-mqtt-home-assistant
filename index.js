@@ -32,19 +32,19 @@ module.exports = (config) => {
 
     const disarm = async partitionId => {
         await riscoClient.disarm();
-        mqttClient.publish(`${ALARM_TOPIC}/${partitionId}/status`, 'disarmed')
+        mqttClient.publish(`${ALARM_TOPIC}/${partitionId}/status`, 'disarmed',{retain:true})
         return Promise.resolve('disarmed')
     }
 
     const partiallyArm = async partitionId => {
         await riscoClient.partiallyArm();
-        mqttClient.publish(`${ALARM_TOPIC}/${partitionId}/status`, 'armed_home')
+        mqttClient.publish(`${ALARM_TOPIC}/${partitionId}/status`, 'armed_home',{retain:true})
         return Promise.resolve('armed_home')
     }
 
     const arm = async partitionId => {
         await riscoClient.arm();
-        mqttClient.publish(`${ALARM_TOPIC}/${partitionId}/status`, 'armed_away')
+        mqttClient.publish(`${ALARM_TOPIC}/${partitionId}/status`, 'armed_away',{retain:true})
         return Promise.resolve('armed_home')
     }
 
@@ -65,7 +65,7 @@ module.exports = (config) => {
     const publishAlarmStateChange = (partitions) => {
         for (const partition of partitions) {
             let state = partition.armedState
-            mqttClient.publish(`${ALARM_TOPIC}/${partition.id}/status`, alarmPayload[state])
+            mqttClient.publish(`${ALARM_TOPIC}/${partition.id}/status`, alarmPayload[state],{retain:true})
             console.log(`published alarm status ${alarmPayload[state]} on partition ${partition.id}`)
         }
     }
@@ -73,8 +73,9 @@ module.exports = (config) => {
     const publishSensorsStateChange = (zones) => {
         for (const zone of zones) {
             const partitionId = zone.part - 1
-            mqttClient.publish(`${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`, JSON.stringify(zone))
-            mqttClient.publish(`${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`, sensorPayload[zone.status])
+            mqttClient.publish(`${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`, JSON.stringify(zone),{retain:true})
+            mqttClient.publish(`${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`, sensorPayload[zone.status],{retain:true})
+            console.log(`published sensor status ${sensorPayload[zone.status]} on ${zone.zoneName}`)
         }
     }
 
@@ -85,21 +86,63 @@ module.exports = (config) => {
                 'state_topic': `${ALARM_TOPIC}/${partition.id}/status`,
                 'command_topic': `${ALARM_TOPIC}/${partition.id}/set`
             }
-            mqttClient.publish(`${HASSIO_DISCOVERY_PREFIX_TOPIC}/alarm_control_panel/${RISCO_NODE_ID}/${partition.id}/config`, JSON.stringify(payload))
+            mqttClient.publish(`${HASSIO_DISCOVERY_PREFIX_TOPIC}/alarm_control_panel/${RISCO_NODE_ID}/${partition.id}/config`, JSON.stringify(payload),{retain:true})
             console.log(`published alarm_control_panel for homeassistant autodiscovery on partition ${partition.id}`)
         }
 
         for (const zone of zones) {
-            const partitionId = zone.part - 1
-            const nodeId = zone.zoneName.replace(' ', '-')
-            const payload = {
-                'name': `${zone.zoneName}`,
-                'payload_on': 'triggered',
-                'payload_off': 'idle',
-                'state_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`,
-                'json_attributes_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`
+            if (zone.zoneName.toLowerCase().includes("pir")) {
+                const partitionId = zone.part - 1
+                const nodeId = zone.zoneName.replace(/\s+/g, '-')    
+                const payload = {
+                    'name': `${zone.zoneName}`,
+                    'device_class': 'motion',
+                    'payload_on': 'triggered',
+                    'payload_off': 'idle',
+                    'state_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`,
+                    'json_attributes_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`
+                }
+                mqttClient.publish(`${HASSIO_DISCOVERY_PREFIX_TOPIC}/binary_sensor/${nodeId}/${zone.zoneID}/config`, JSON.stringify(payload),{retain:true})
+                console.log(`published ${zone.zoneName} as motion sensor for homeassistant autodiscovery`)        
+            } else if (zone.zoneName.toLowerCase().includes("raam") || zone.zoneName.toLowerCase().includes("window")) {
+                const partitionId = zone.part - 1
+                const nodeId = zone.zoneName.replace(/\s+/g, '-')    
+                const payload = {
+                    'name': `${zone.zoneName}`,
+                    'device_class': 'window',
+                    'payload_on': 'triggered',
+                    'payload_off': 'idle',
+                    'state_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`,
+                    'json_attributes_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`
+                }
+                mqttClient.publish(`${HASSIO_DISCOVERY_PREFIX_TOPIC}/binary_sensor/${nodeId}/${zone.zoneID}/config`, JSON.stringify(payload),{retain:true})
+                console.log(`published ${zone.zoneName} as window sensor for homeassistant autodiscovery`)        
+            } else if (zone.zoneName.toLowerCase().includes("deur") || zone.zoneName.toLowerCase().includes("door")) {
+                const partitionId = zone.part - 1
+                const nodeId = zone.zoneName.replace(/\s+/g, '-')    
+                const payload = {
+                    'name': `${zone.zoneName}`,
+                    'device_class': 'door',
+                    'payload_on': 'triggered',
+                    'payload_off': 'idle',
+                    'state_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`,
+                    'json_attributes_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`
+                }
+                mqttClient.publish(`${HASSIO_DISCOVERY_PREFIX_TOPIC}/binary_sensor/${nodeId}/${zone.zoneID}/config`, JSON.stringify(payload),{retain:true})
+                console.log(`published ${zone.zoneName} as door sensor for homeassistant autodiscovery`)                                
+            } else {
+                const partitionId = zone.part - 1
+                const nodeId = zone.zoneName.replace(/\s+/g, '-')    
+                const payload = {
+                    'name': `${zone.zoneName}`,
+                    'payload_on': 'triggered',
+                    'payload_off': 'idle',
+                    'state_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}/status`,
+                    'json_attributes_topic': `${ALARM_TOPIC}/${partitionId}/sensor/${zone.zoneID}`
+                }
+                mqttClient.publish(`${HASSIO_DISCOVERY_PREFIX_TOPIC}/binary_sensor/${nodeId}/${zone.zoneID}/config`, JSON.stringify(payload),{retain:true})
+                console.log(`published ${zone.zoneName} as generic sensor for homeassistant autodiscovery`)        
             }            
-            mqttClient.publish(`${HASSIO_DISCOVERY_PREFIX_TOPIC}/binary_sensor/${nodeId}/${zone.zoneID}/config`, JSON.stringify(payload))
         }
         console.log(`published ${zones.length} binary_sensor for homeassistant autodiscovery`)
     }
